@@ -128,7 +128,7 @@ function buildCourses(categories: Category[]): Course[] {
   return Array.from({ length: 50 }, (_, i) => {
     const category = categories[i % categories.length]!;
     const topic = category.name;
-    const suffix = TOPIC_WORDS[i % TOPIC_WORDS.length]!;
+    const suffix = TOPIC_WORDS[Math.floor(i / categories.length) % TOPIC_WORDS.length]!;
     const title = `${topic} ${suffix}`;
     const id = `crs-${i + 1}`;
     const rating = Number((3.9 + rand() * 1.1).toFixed(1));
