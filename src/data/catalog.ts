@@ -76,6 +76,8 @@ const SECTION_TITLES = [
   "Shipping and Next Steps",
 ];
 
+const LESSON_SUBJECTS = ["the project workspace","core building blocks","the data model","the main interface","reusable patterns","edge cases","performance","the final build","team workflows","real-world examples"];
+
 const LESSON_VERBS = ["Introduction to","Setting up","Understanding","Designing","Implementing","Testing","Refactoring","Shipping"];
 
 const VIDEO_URL =
@@ -106,7 +108,7 @@ function buildSections(courseId: string, topic: string, seed: number): Section[]
       const minutes = 6 + Math.floor(rand() * 18);
       return {
         id: `${courseId}-s${s + 1}-l${l + 1}`,
-        title: `${LESSON_VERBS[l]} ${topic} ${sectionTitle.split(" ")[0]!.toLowerCase()}`,
+        title: `${LESSON_VERBS[l]} ${LESSON_SUBJECTS[(s + l) % LESSON_SUBJECTS.length]}`,
         duration: `${minutes}:${String(Math.floor(rand() * 60)).padStart(2, "0")}`,
         description: `A focused lesson covering ${topic.toLowerCase()} with a practical walkthrough you can follow along with in your own editor.`,
         videoUrl: VIDEO_URL,
