@@ -27,22 +27,23 @@ import type { CourseQuery } from "@/services/catalog-service";
 import type { Level } from "@/types/catalog";
 
 interface CoursesSearch {
-  q?: string;
-  category?: string;
-  level?: Level | "all";
-  price?: "all" | "free" | "paid";
-  sort?: NonNullable<CourseQuery["sort"]>;
-  page?: number;
+  q?: string | undefined;
+  category?: string | undefined;
+  level?: Level | "all" | undefined;
+  price?: "all" | "free" | "paid" | undefined;
+  sort?: NonNullable<CourseQuery["sort"]> | undefined;
+  page?: number | undefined;
 }
 
 export const Route = createFileRoute("/courses/")({
   validateSearch: (search: Record<string, unknown>): CoursesSearch => ({
-    q: typeof search.q === "string" && search.q ? search.q : undefined,
-    category: typeof search.category === "string" ? search.category : undefined,
-    level: (search.level as CoursesSearch["level"]) ?? undefined,
-    price: (search.price as CoursesSearch["price"]) ?? undefined,
-    sort: (search.sort as CoursesSearch["sort"]) ?? undefined,
-    page: Number(search.page) > 1 ? Number(search.page) : undefined,
+    q: typeof search["q"] === "string" && search["q"] ? (search["q"] as string) : undefined,
+    category:
+      typeof search["category"] === "string" ? (search["category"] as string) : undefined,
+    level: (search["level"] as CoursesSearch["level"]) ?? undefined,
+    price: (search["price"] as CoursesSearch["price"]) ?? undefined,
+    sort: (search["sort"] as CoursesSearch["sort"]) ?? undefined,
+    page: Number(search["page"]) > 1 ? Number(search["page"]) : undefined,
   }),
   head: () => ({
     meta: [
@@ -68,7 +69,11 @@ function CoursesPage() {
 
   const setSearch = (patch: Partial<CoursesSearch>) => {
     navigate({
-      search: (prev) => ({ ...prev, ...patch, page: patch.page ?? undefined }),
+      search: (prev: CoursesSearch) => ({
+        ...prev,
+        ...patch,
+        page: patch.page ?? undefined,
+      }),
     });
   };
 

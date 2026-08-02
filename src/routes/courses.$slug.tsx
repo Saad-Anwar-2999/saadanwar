@@ -233,7 +233,7 @@ function CourseDetailsPage() {
           </TabsList>
 
           <TabsContent value="curriculum" className="mt-6 max-w-3xl">
-            <Accordion type="single" collapsible defaultValue={course.sections[0]?.id}>
+            <Accordion type="single" collapsible defaultValue={course.sections[0]?.id ?? ""}>
               {course.sections.map((section) => (
                 <AccordionItem key={section.id} value={section.id}>
                   <AccordionTrigger className="text-left">
