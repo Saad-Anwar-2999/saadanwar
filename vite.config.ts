@@ -10,10 +10,26 @@
 // Its "module" build (dist/index.js) uses import and doesn't hit the bug.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config/dist/index.js";
 
+// GitHub Pages serves this project from https://<user>.github.io/saadanwar/,
+// so every asset URL and route match needs the "/saadanwar/" prefix. The
+// deploy workflow sets GH_PAGES=true; local dev/build stay at "/".
+const base = process.env.GH_PAGES === "true" ? "/saadanwar/" : "/";
+
 export default defineConfig({
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
     server: { entry: "server" },
+    // GitHub Pages only serves static files, so ship a client-only SPA build:
+    // prerender the app shell straight to index.html instead of relying on a
+    // Nitro/Node server to render each request.
+    spa: {
+      enabled: true,
+      prerender: { outputPath: "/index.html" },
+    },
+    router: { basepath: base },
   },
+  vite: { base },
+  // No server runtime on GitHub Pages — skip the Nitro build entirely.
+  nitro: false,
 });

@@ -1,0 +1,56 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build (SPA, GitHub Pages base path)
+        run: bun run build
+        env:
+          GH_PAGES: "true"
+
+      # GitHub Pages has no server-side rewrites, so client-side routes (e.g.
+      # /courses/some-slug) 404 on direct load/refresh. Serving the SPA shell
+      # as 404.html is the standard workaround: GitHub Pages returns it for
+      # any unmatched path, and the router then takes over client-side.
+      - name: Add SPA fallback (404.html)
+        run: cp dist/client/index.html dist/client/404.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/client
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
